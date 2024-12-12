@@ -1,10 +1,13 @@
 export default {
-  root: './frontend', // Specify the root directory where your index.html is located
+  root: '.',  // Set root to the current directory (frontend)
   build: {
-    outDir: '../dist', // Output directory for the build (adjust as needed)
+    outDir: '../dist',  // Output build folder (parent folder)
+    rollupOptions: {
+      input: './index.html',  // Entry point for the build
+    },
   },
   server: {
-    port: 5173,  // Set the port to 5173
+    port: 5173,  // Port for development server
   },
 }
 
