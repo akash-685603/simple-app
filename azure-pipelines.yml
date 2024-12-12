@@ -1,0 +1,26 @@
+trigger:
+  branches:
+    include:
+      - frontend
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  jobs:
+  - job: BuildFrontend
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '14.x'
+      displayName: 'Install Node.js'
+    - script: |
+        cd frontend
+        npm install
+        npm run build
+      displayName: 'Build Frontend'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathToPublish: 'frontend/build'
+        artifactName: 'frontend-drop'
