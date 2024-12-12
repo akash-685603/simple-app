@@ -27,6 +27,6 @@ stages:
 
     - task: PublishBuildArtifacts@1
       inputs:
-        pathToPublish: 'frontend/build'  # Ensure this matches your build output folder
+        pathToPublish: 'frontend/dist'  # Corrected to 'dist' as that's the output folder
         artifactName: 'frontend-drop'  # Name of the published artifact
       displayName: 'Publish Build Artifacts'
