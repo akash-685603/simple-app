@@ -1,0 +1,32 @@
+trigger:
+  branches:
+    include:
+      - frontend  # Adjusted to trigger on the frontend branch
+
+pool:
+  name: Simple-App Pool  # Use your self-hosted agent pool
+  demands:
+    - agent.name -equals myagent  # Ensures it runs on your specified agent
+
+stages:
+- stage: Build
+  jobs:
+  - job: BuildFrontend
+    displayName: "Build Frontend"
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '14.x'  # Install Node.js version 14.x
+      displayName: 'Install Node.js'
+
+    - script: |
+        cd frontend
+        npm install
+        npm run build
+      displayName: 'Build Frontend'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathToPublish: 'frontend/dist'  # Corrected to 'dist' as that's the output folder
+        artifactName: 'frontend-drop'  # Name of the published artifact
+      displayName: 'Publish Build Artifacts'
