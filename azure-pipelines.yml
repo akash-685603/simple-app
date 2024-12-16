@@ -6,7 +6,7 @@ trigger:
 pr:
   branches:
     include:
-      - Frontend-pipeline  # Trigger the pipeline for pull requests targeting the frontend branch
+      - frontend  # Trigger the pipeline for pull requests targeting the frontend branch
 
 pool:
   name: Simple-App Pool  # Use your self-hosted agent pool
@@ -17,7 +17,7 @@ stages:
 # PR Validation Stage
 - stage: PRValidation
   displayName: Pull Request Validation
-  condition: eq(variables['Build.Reason'], 'PullRequest')  # Only runs for PRs
+  condition: eq(variables['Build.Reason'], 'PullRequest')  # Runs only for PRs
   jobs:
   - job: ValidateFrontend
     displayName: "Validate Frontend Code Quality"
@@ -37,18 +37,18 @@ stages:
     # Run Linting
     - script: |
         cd frontend
-        npm run lint  # Assumes linting is configured in package.json
+        npm run lint  # Run linting as defined in package.json
       displayName: 'Run Linting'
 
     # Run Tests
     - script: |
         cd frontend
-        npm run test  # Assumes tests are configured in package.json
+        npm run test  # Run tests as defined in package.json
       displayName: 'Run Tests'
 
 # Regular Build Stage
 - stage: Build
-  condition: ne(variables['Build.Reason'], 'PullRequest')  # Skip for PRs
+  condition: ne(variables['Build.Reason'], 'PullRequest')  # Skip during PRs
   displayName: CI Build
   jobs:
   - job: BuildFrontend
