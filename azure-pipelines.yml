@@ -6,7 +6,7 @@ trigger:
 pr:
   branches:
     include:
-      - frontend  # Trigger the pipeline for pull requests targeting the frontend branch
+      - Frontend-pipeline  # Trigger the pipeline for pull requests targeting the frontend branch
 
 pool:
   name: Simple-App Pool  # Use your self-hosted agent pool
