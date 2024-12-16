@@ -3,31 +3,73 @@ trigger:
     include:
       - frontend  # Trigger the pipeline when changes are pushed to the frontend branch
 
+pr:
+  branches:
+    include:
+      - frontend  # Trigger the pipeline for pull requests targeting the frontend branch
+
 pool:
   name: Simple-App Pool  # Use your self-hosted agent pool
   demands:
     - agent.name -equals myagent  # Ensures it runs on your specified agent
 
 stages:
-- stage: Build
+# PR Validation Stage
+- stage: PRValidation
+  displayName: Pull Request Validation
+  condition: eq(variables['Build.Reason'], 'PullRequest')  # Only runs for PRs
   jobs:
-  - job: BuildFrontend
-    displayName: "Build Frontend"
+  - job: ValidateFrontend
+    displayName: "Validate Frontend Code Quality"
     steps:
+    # Install Node.js
     - task: NodeTool@0
       inputs:
         versionSpec: '14.x'  # Install Node.js version 14.x
       displayName: 'Install Node.js'
 
+    # Install dependencies
     - script: |
         cd frontend
         npm install
-        npm run build  # This will run 'vite build' and generate the dist folder
+      displayName: 'Install Dependencies'
+
+    # Run Linting
+    - script: |
+        cd frontend
+        npm run lint  # Assumes linting is configured in package.json
+      displayName: 'Run Linting'
+
+    # Run Tests
+    - script: |
+        cd frontend
+        npm run test  # Assumes tests are configured in package.json
+      displayName: 'Run Tests'
+
+# Regular Build Stage
+- stage: Build
+  condition: ne(variables['Build.Reason'], 'PullRequest')  # Skip for PRs
+  displayName: CI Build
+  jobs:
+  - job: BuildFrontend
+    displayName: "Build Frontend"
+    steps:
+    # Install Node.js
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '14.x'  # Install Node.js version 14.x
+      displayName: 'Install Node.js'
+
+    # Build Frontend
+    - script: |
+        cd frontend
+        npm install
+        npm run build  # Builds the project and generates the 'dist' folder
       displayName: 'Build Frontend'
 
+    # Publish Artifacts
     - task: PublishBuildArtifacts@1
       inputs:
         pathToPublish: 'frontend/dist'  # Correct path to the build output folder inside frontend
         artifactName: 'frontend-drop'   # Name of the published artifact
       displayName: 'Publish Build Artifacts'
-
